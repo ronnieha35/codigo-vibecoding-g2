@@ -121,7 +121,9 @@ export default function SupplierForm({ open, onOpenChange, defaultValues, onSubm
                 name="is_active"
                 render={({ field }) => (
                   <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? 'Activo' : 'Inactivo'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="true">Activo</SelectItem>
                       <SelectItem value="false">Inactivo</SelectItem>

@@ -84,7 +84,9 @@ export default function CustomerForm({ open, onOpenChange, defaultValues, onSubm
                 name="customer_type"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value === 'PERSON' ? 'Persona' : 'Empresa'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="PERSON">Persona</SelectItem>
                       <SelectItem value="COMPANY">Empresa</SelectItem>
@@ -140,7 +142,9 @@ export default function CustomerForm({ open, onOpenChange, defaultValues, onSubm
                 name="is_active"
                 render={({ field }) => (
                   <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? 'Activo' : 'Inactivo'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="true">Activo</SelectItem>
                       <SelectItem value="false">Inactivo</SelectItem>

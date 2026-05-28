@@ -24,8 +24,12 @@ const schema = z.object({
 export type DriverFormValues = z.infer<typeof schema>
 
 const EMPTY: DriverFormValues = {
-  user_id: 0, transport_id: null, license_number: '',
-  phone: '', is_available: true, is_active: true,
+  user_id: undefined as unknown as number,
+  transport_id: null,
+  license_number: '',
+  phone: '',
+  is_available: true,
+  is_active: true,
 }
 
 interface Props {
@@ -62,6 +66,12 @@ export default function DriverForm({ open, onOpenChange, defaultValues, onSubmit
     }
   }, [open, defaultValues, reset])
 
+  const transportLabel = (id: number | null | undefined) => {
+    if (!id) return 'Sin vehículo'
+    const t = transports.find((x) => x.id === id)
+    return t ? `${t.name} — ${t.license_plate}` : 'Sin vehículo'
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
@@ -73,24 +83,29 @@ export default function DriverForm({ open, onOpenChange, defaultValues, onSubmit
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="user_id">User ID</Label>
-              <Input id="user_id" type="number" {...register('user_id', { valueAsNumber: true })} />
+              <Input
+                id="user_id"
+                type="number"
+                placeholder="ID del usuario"
+                {...register('user_id', { valueAsNumber: true })}
+              />
               {errors.user_id && <p className="text-sm text-destructive">{errors.user_id.message}</p>}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="license_number">Número de licencia</Label>
-              <Input id="license_number" {...register('license_number')} />
+              <Input id="license_number" placeholder="Ej. B-1234" {...register('license_number')} />
               {errors.license_number && <p className="text-sm text-destructive">{errors.license_number.message}</p>}
             </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="phone">Teléfono</Label>
-            <Input id="phone" {...register('phone')} />
+            <Input id="phone" placeholder="+502 0000-0000" {...register('phone')} />
             {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label>Vehículo <span className="text-zinc-400">(opcional)</span></Label>
+            <Label>Vehículo <span className="text-muted-foreground text-xs">(opcional)</span></Label>
             <Controller
               control={control}
               name="transport_id"
@@ -99,7 +114,9 @@ export default function DriverForm({ open, onOpenChange, defaultValues, onSubmit
                   value={field.value ? String(field.value) : 'none'}
                   onValueChange={(v) => field.onChange(v === 'none' ? null : Number(v))}
                 >
-                  <SelectTrigger><SelectValue placeholder="Sin vehículo" /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>{transportLabel(field.value)}</SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Sin vehículo</SelectItem>
                     {transports.map((t) => (
@@ -121,7 +138,9 @@ export default function DriverForm({ open, onOpenChange, defaultValues, onSubmit
                 name="is_available"
                 render={({ field }) => (
                   <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? 'Disponible' : 'No disponible'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="true">Disponible</SelectItem>
                       <SelectItem value="false">No disponible</SelectItem>
@@ -137,7 +156,9 @@ export default function DriverForm({ open, onOpenChange, defaultValues, onSubmit
                 name="is_active"
                 render={({ field }) => (
                   <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? 'Activo' : 'Inactivo'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="true">Activo</SelectItem>
                       <SelectItem value="false">Inactivo</SelectItem>

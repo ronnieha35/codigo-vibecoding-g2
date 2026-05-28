@@ -151,7 +151,7 @@ export default function WarehouseForm({
                   onValueChange={(v) => field.onChange(v === 'true')}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue>{field.value ? 'Activo' : 'Inactivo'}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="true">Activo</SelectItem>

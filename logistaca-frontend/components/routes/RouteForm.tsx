@@ -96,7 +96,9 @@ export default function RouteForm({ open, onOpenChange, defaultValues, onSubmit,
                     value={field.value ? String(field.value) : ''}
                     onValueChange={(v) => field.onChange(Number(v))}
                   >
-                    <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? (warehouses.find((w) => w.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       {warehouses.map((w) => (
                         <SelectItem key={w.id} value={String(w.id)}>{w.name} — {w.city}</SelectItem>
@@ -133,7 +135,9 @@ export default function RouteForm({ open, onOpenChange, defaultValues, onSubmit,
                 name="is_active"
                 render={({ field }) => (
                   <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? 'Activo' : 'Inactivo'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="true">Activo</SelectItem>
                       <SelectItem value="false">Inactivo</SelectItem>
@@ -176,7 +180,9 @@ export default function RouteForm({ open, onOpenChange, defaultValues, onSubmit,
                           value={f.value ? String(f.value) : ''}
                           onValueChange={(v) => f.onChange(Number(v))}
                         >
-                          <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue>{f.value ? (warehouses.find((w) => w.id === f.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                          </SelectTrigger>
                           <SelectContent>
                             {warehouses.map((w) => (
                               <SelectItem key={w.id} value={String(w.id)}>{w.name}</SelectItem>

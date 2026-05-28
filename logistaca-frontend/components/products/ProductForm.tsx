@@ -100,7 +100,9 @@ export default function ProductForm({ open, onOpenChange, defaultValues, onSubmi
                     value={field.value ? String(field.value) : ''}
                     onValueChange={(v) => field.onChange(Number(v))}
                   >
-                    <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? (suppliers.find((s) => s.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       {suppliers.map((s) => (
                         <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>
@@ -121,7 +123,9 @@ export default function ProductForm({ open, onOpenChange, defaultValues, onSubmi
                     value={field.value ? String(field.value) : 'none'}
                     onValueChange={(v) => field.onChange(v === 'none' ? null : Number(v))}
                   >
-                    <SelectTrigger><SelectValue placeholder="Sin bodega" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? (warehouses.find((w) => w.id === field.value)?.name ?? 'Sin bodega') : 'Sin bodega'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Sin bodega</SelectItem>
                       {warehouses.map((w) => (
@@ -204,7 +208,9 @@ export default function ProductForm({ open, onOpenChange, defaultValues, onSubmi
               name="is_active"
               render={({ field }) => (
                 <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>{field.value ? 'Activo' : 'Inactivo'}</SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="true">Activo</SelectItem>
                     <SelectItem value="false">Inactivo</SelectItem>

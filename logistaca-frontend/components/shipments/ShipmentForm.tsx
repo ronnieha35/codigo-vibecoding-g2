@@ -118,18 +118,23 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
     }
   }, [open, defaultValues, reset])
 
-  const optionalSelect = (value: number | null | undefined, onChange: (v: number | null) => void, placeholder: string, options: { id: number; label: string }[]) => (
-    <Select
-      value={value ? String(value) : 'none'}
-      onValueChange={(v) => onChange(v === 'none' ? null : Number(v))}
-    >
-      <SelectTrigger><SelectValue placeholder={placeholder} /></SelectTrigger>
-      <SelectContent>
-        <SelectItem value="none">{placeholder}</SelectItem>
-        {options.map((o) => <SelectItem key={o.id} value={String(o.id)}>{o.label}</SelectItem>)}
-      </SelectContent>
-    </Select>
-  )
+  const optionalSelect = (value: number | null | undefined, onChange: (v: number | null) => void, placeholder: string, options: { id: number; label: string }[]) => {
+    const selectedLabel = value ? (options.find((o) => o.id === value)?.label ?? placeholder) : placeholder
+    return (
+      <Select
+        value={value ? String(value) : 'none'}
+        onValueChange={(v) => onChange(v === 'none' ? null : Number(v))}
+      >
+        <SelectTrigger>
+          <SelectValue>{selectedLabel}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="none">{placeholder}</SelectItem>
+          {options.map((o) => <SelectItem key={o.id} value={String(o.id)}>{o.label}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    )
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -145,7 +150,9 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
               <Label>Cliente</Label>
               <Controller control={control} name="customer_id" render={({ field }) => (
                 <Select value={field.value ? String(field.value) : ''} onValueChange={(v) => field.onChange(Number(v))}>
-                  <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>{field.value ? (customers.find((c) => c.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                  </SelectTrigger>
                   <SelectContent>{customers.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}</SelectContent>
                 </Select>
               )} />
@@ -155,7 +162,9 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
               <Label>Bodega origen</Label>
               <Controller control={control} name="origin_warehouse_id" render={({ field }) => (
                 <Select value={field.value ? String(field.value) : ''} onValueChange={(v) => field.onChange(Number(v))}>
-                  <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>{field.value ? (warehouses.find((w) => w.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                  </SelectTrigger>
                   <SelectContent>{warehouses.map((w) => <SelectItem key={w.id} value={String(w.id)}>{w.name} — {w.city}</SelectItem>)}</SelectContent>
                 </Select>
               )} />
@@ -210,7 +219,9 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
               <Label>Estado</Label>
               <Controller control={control} name="status" render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>{STATUS_OPTIONS.find((s) => s.value === field.value)?.label ?? field.value}</SelectValue>
+                  </SelectTrigger>
                   <SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
                 </Select>
               )} />
@@ -260,7 +271,9 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
                     <Label className="text-xs">Producto</Label>
                     <Controller control={control} name={`items.${index}.product_id`} render={({ field: f }) => (
                       <Select value={f.value ? String(f.value) : ''} onValueChange={(v) => f.onChange(Number(v))}>
-                        <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue>{f.value ? (products.find((p) => p.id === f.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                        </SelectTrigger>
                         <SelectContent>{products.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}</SelectContent>
                       </Select>
                     )} />

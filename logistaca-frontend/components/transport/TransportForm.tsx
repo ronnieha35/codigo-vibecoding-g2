@@ -87,7 +87,11 @@ export default function TransportForm({ open, onOpenChange, defaultValues, onSub
               name="vehicle_type"
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>
+                      {({ TRUCK: 'Camión', VAN: 'Furgoneta', MOTORCYCLE: 'Moto', OTHER: 'Otro' } as Record<string, string>)[field.value] ?? field.value}
+                    </SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="TRUCK">Camión</SelectItem>
                     <SelectItem value="VAN">Furgoneta</SelectItem>
@@ -121,7 +125,9 @@ export default function TransportForm({ open, onOpenChange, defaultValues, onSub
                 name="is_available"
                 render={({ field }) => (
                   <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? 'Disponible' : 'No disponible'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="true">Disponible</SelectItem>
                       <SelectItem value="false">No disponible</SelectItem>
@@ -137,7 +143,9 @@ export default function TransportForm({ open, onOpenChange, defaultValues, onSub
                 name="is_active"
                 render={({ field }) => (
                   <Select value={field.value ? 'true' : 'false'} onValueChange={(v) => field.onChange(v === 'true')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? 'Activo' : 'Inactivo'}</SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="true">Activo</SelectItem>
                       <SelectItem value="false">Inactivo</SelectItem>
