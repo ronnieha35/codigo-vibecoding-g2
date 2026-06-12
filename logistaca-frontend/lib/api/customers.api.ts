@@ -3,8 +3,8 @@ import type { PaginatedResponse } from '@/lib/types/api.types'
 import type { CustomerList, CustomerDetail, CustomerWrite } from '@/lib/types/customers.types'
 
 export const customersApi = {
-  list: (page = 1, pageSize = 20) =>
-    apiClient.get<PaginatedResponse<CustomerList>>('/customers/', { params: { page, page_size: pageSize } }),
+  list: (page = 1, pageSize = 20, search?: string, customerType?: string) =>
+    apiClient.get<PaginatedResponse<CustomerList>>('/customers/', { params: { page, page_size: pageSize, ...(search ? { search } : {}), ...(customerType ? { customer_type: customerType } : {}) } }),
 
   get: (id: number) =>
     apiClient.get<CustomerDetail>(`/customers/${id}/`),

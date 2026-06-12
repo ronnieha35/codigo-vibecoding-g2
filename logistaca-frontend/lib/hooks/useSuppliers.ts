@@ -6,10 +6,10 @@ import type { SupplierWrite } from '@/lib/types/suppliers.types'
 
 const QUERY_KEY = 'suppliers'
 
-export function useSupplierList(page: number) {
+export function useSupplierList(page: number, search?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => suppliersApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, search],
+    queryFn: () => suppliersApi.list(page, 20, search).then((r) => r.data),
   })
 }
 

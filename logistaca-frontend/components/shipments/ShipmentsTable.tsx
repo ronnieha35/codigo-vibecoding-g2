@@ -28,6 +28,8 @@ interface Props {
   onEdit: (id: number) => void
   onDelete: (shipment: ShipmentList) => void
   onView: (id: number) => void
+  canEdit?: boolean
+  canDelete?: boolean
 }
 
 const STATUS_LABEL: Record<ShipmentStatus, string> = {
@@ -57,6 +59,8 @@ export default function ShipmentsTable({
   onEdit,
   onDelete,
   onView,
+  canEdit = true,
+  canDelete = true,
 }: Props) {
   const columns = [
     columnHelper.accessor('id', { header: 'ID' }),
@@ -86,17 +90,21 @@ export default function ShipmentsTable({
           <Button variant="ghost" size="icon" onClick={() => onView(info.row.original.id)}>
             <Eye className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => onEdit(info.row.original.id)}>
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-destructive hover:text-destructive"
-            onClick={() => onDelete(info.row.original)}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          {canEdit && (
+            <Button variant="ghost" size="icon" onClick={() => onEdit(info.row.original.id)}>
+              <Pencil className="w-4 h-4" />
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-destructive hover:text-destructive"
+              onClick={() => onDelete(info.row.original)}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       ),
     }),
@@ -104,12 +112,22 @@ export default function ShipmentsTable({
 
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() })
 
-  if (isLoading) return <div className="py-12 text-center text-zinc-400">Cargando...</div>
-  if (!data.length) return <div className="py-12 text-center text-zinc-400">No hay envíos registrados.</div>
+  if (isLoading) return (
+    <div className="py-16 text-center text-muted-foreground">
+      <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+      Cargando envíos...
+    </div>
+  )
+  if (!data.length) return (
+    <div className="py-16 text-center text-muted-foreground rounded-xl border border-dashed border-border bg-card">
+      <p className="font-medium text-sm">Sin envíos</p>
+      <p className="text-xs mt-1">Prueba ajustando los filtros o crea un nuevo envío.</p>
+    </div>
+  )
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -133,7 +151,7 @@ export default function ShipmentsTable({
       </div>
       <div className="flex items-center justify-end gap-2">
         <Button variant="outline" size="sm" disabled={page === 1} onClick={() => onPageChange(page - 1)}>Anterior</Button>
-        <span className="text-sm text-zinc-500">Página {page}</span>
+        <span className="text-sm text-muted-foreground">Página {page}</span>
         <Button variant="outline" size="sm" disabled={!hasNextPage} onClick={() => onPageChange(page + 1)}>Siguiente</Button>
       </div>
     </div>

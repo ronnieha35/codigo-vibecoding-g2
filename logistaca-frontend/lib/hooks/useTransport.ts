@@ -6,10 +6,10 @@ import type { TransportWrite } from '@/lib/types/transport.types'
 
 const QUERY_KEY = 'transport'
 
-export function useTransportList(page: number) {
+export function useTransportList(page: number, search?: string, vehicleType?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => transportApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, search, vehicleType],
+    queryFn: () => transportApi.list(page, 20, search, vehicleType).then((r) => r.data),
   })
 }
 

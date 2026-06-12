@@ -114,7 +114,7 @@ export default function ProductForm({ open, onOpenChange, defaultValues, onSubmi
               {errors.supplier_id && <p className="text-sm text-destructive">{errors.supplier_id.message}</p>}
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label>Bodega <span className="text-zinc-400">(opcional)</span></Label>
+              <Label>Bodega <span className="text-muted-foreground">(opcional)</span></Label>
               <Controller
                 control={control}
                 name="warehouse_id"
@@ -220,7 +220,11 @@ export default function ProductForm({ open, onOpenChange, defaultValues, onSubmi
             />
           </div>
 
-          {serverError && <p className="text-sm text-destructive text-center">{serverError}</p>}
+          {serverError && (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-sm text-destructive" role="alert">
+              {serverError}
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>

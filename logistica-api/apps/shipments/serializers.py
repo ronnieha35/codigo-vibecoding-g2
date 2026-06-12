@@ -100,7 +100,12 @@ class ShipmentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shipment
         fields = [
-            'id', 'customer', 'origin_warehouse', 'driver', 'transport', 'route',
+            'id',
+            'customer_id', 'customer',
+            'origin_warehouse_id', 'origin_warehouse',
+            'driver_id', 'driver',
+            'transport_id', 'transport',
+            'route_id', 'route',
             'destination_address', 'destination_city', 'destination_country',
             'status', 'scheduled_date', 'delivered_at',
             'shipping_cost', 'total_weight_kg', 'notes',

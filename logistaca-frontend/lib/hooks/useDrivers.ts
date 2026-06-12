@@ -6,10 +6,10 @@ import type { DriverWrite } from '@/lib/types/drivers.types'
 
 const QUERY_KEY = 'drivers'
 
-export function useDriverList(page: number) {
+export function useDriverList(page: number, search?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => driversApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, search],
+    queryFn: () => driversApi.list(page, 20, search).then((r) => r.data),
   })
 }
 

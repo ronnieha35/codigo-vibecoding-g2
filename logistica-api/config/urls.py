@@ -16,13 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from drf_spectacular.utils import extend_schema
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,9 +24,7 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    path('api/v1/auth/token/', extend_schema(tags=['auth'])(TokenObtainPairView).as_view(), name='token_obtain_pair'),
-    path('api/v1/auth/token/refresh/', extend_schema(tags=['auth'])(TokenRefreshView).as_view(), name='token_refresh'),
-    path('api/v1/auth/token/verify/', extend_schema(tags=['auth'])(TokenVerifyView).as_view(), name='token_verify'),
+    path('api/v1/auth/', include('apps.authentication.urls')),
     path('api/v1/', include('apps.suppliers.urls')),
     path('api/v1/', include('apps.warehouses.urls')),
     path('api/v1/', include('apps.products.urls')),
@@ -41,4 +33,5 @@ urlpatterns = [
     path('api/v1/', include('apps.drivers.urls')),
     path('api/v1/', include('apps.routes.urls')),
     path('api/v1/', include('apps.shipments.urls')),
+    path('api/v1/', include('apps.analytics.urls')),
 ]

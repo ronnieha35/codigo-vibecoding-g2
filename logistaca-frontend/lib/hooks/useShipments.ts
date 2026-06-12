@@ -1,15 +1,15 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { shipmentsApi } from '@/lib/api/shipments.api'
+import { shipmentsApi, type ShipmentFilters } from '@/lib/api/shipments.api'
 import type { ShipmentWrite } from '@/lib/types/shipments.types'
 
 const QUERY_KEY = 'shipments'
 
-export function useShipmentList(page: number) {
+export function useShipmentList(page: number, filters?: ShipmentFilters) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => shipmentsApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, filters],
+    queryFn: () => shipmentsApi.list(page, 20, filters).then((r) => r.data),
   })
 }
 

@@ -24,7 +24,7 @@ const STATUS_VARIANT: Record<ShipmentStatus, 'default' | 'secondary' | 'destruct
 }
 
 export default function ShipmentStatusHistory({ history }: Props) {
-  if (!history.length) return <p className="text-sm text-zinc-400">Sin historial de estado.</p>
+  if (!history.length) return <p className="text-sm text-muted-foreground">Sin historial de estado.</p>
 
   return (
     <div className="flex flex-col gap-2">
@@ -34,11 +34,11 @@ export default function ShipmentStatusHistory({ history }: Props) {
             {STATUS_LABEL[entry.status]}
           </Badge>
           <div className="flex flex-col gap-0.5">
-            <span className="text-zinc-500 text-xs">
+            <span className="text-muted-foreground text-xs">
               {new Date(entry.changed_at).toLocaleString('es-CO')}
               {entry.changed_by ? ` · ${entry.changed_by.username}` : ''}
             </span>
-            {entry.notes && <span className="text-zinc-700">{entry.notes}</span>}
+            {entry.notes && <span className="text-foreground">{entry.notes}</span>}
           </div>
         </div>
       ))}

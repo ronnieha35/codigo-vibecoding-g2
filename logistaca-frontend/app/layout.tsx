@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Lexend, Source_Sans_3 } from "next/font/google";
 import Providers from "./providers";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-sans",
+const lexend = Lexend({
+  variable: "--font-heading",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-geist-mono",
+const sourceSans = Source_Sans_3({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Logística",
-  description: "Plataforma de gestión logística",
+  title: "Logistica Web — Logística inteligente para LATAM",
+  description: "Mueve más, gestiona menos. Logística inteligente para empresas que no se detienen.",
 };
 
 export default function RootLayout({
@@ -26,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${lexend.variable} ${sourceSans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

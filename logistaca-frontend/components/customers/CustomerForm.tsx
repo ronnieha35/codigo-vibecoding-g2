@@ -132,7 +132,7 @@ export default function CustomerForm({ open, onOpenChange, defaultValues, onSubm
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="tax_id">Tax ID <span className="text-zinc-400">(opcional)</span></Label>
+              <Label htmlFor="tax_id">Tax ID <span className="text-muted-foreground">(opcional)</span></Label>
               <Input id="tax_id" {...register('tax_id')} />
             </div>
             <div className="flex flex-col gap-1.5">

@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
@@ -13,8 +14,14 @@ from .serializers import (
 
 @viewset_tag('drivers')
 class DriverViewSet(ModelViewSet):
-    queryset = Driver.objects.select_related('user', 'transport').filter(is_active=True)
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = Driver.objects.select_related('transport').filter(is_active=True)
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(Q(first_name__icontains=search) | Q(last_name__icontains=search) | Q(license_number__icontains=search))
+        return qs
 
     def get_serializer_class(self):
         if self.action == 'list':

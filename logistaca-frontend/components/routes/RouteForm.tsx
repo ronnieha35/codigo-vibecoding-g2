@@ -163,12 +163,12 @@ export default function RouteForm({ open, onOpenChange, defaultValues, onSubmit,
             </div>
 
             {fields.length === 0 && (
-              <p className="text-sm text-zinc-400 text-center py-2">Sin paradas. Agrega al menos una.</p>
+              <p className="text-sm text-muted-foreground text-center py-2">Sin paradas. Agrega al menos una.</p>
             )}
 
             {fields.map((field, index) => (
               <div key={field.id} className="flex items-start gap-2 p-3 border rounded-md">
-                <span className="text-sm font-medium text-zinc-500 mt-2 w-4">{index + 1}</span>
+                <span className="text-sm font-medium text-muted-foreground mt-2 w-4">{index + 1}</span>
                 <div className="flex-1 grid grid-cols-2 gap-2">
                   <div className="flex flex-col gap-1">
                     <Label className="text-xs">Bodega</Label>

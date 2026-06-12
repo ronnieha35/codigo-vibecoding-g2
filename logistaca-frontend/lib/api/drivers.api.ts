@@ -3,8 +3,8 @@ import type { PaginatedResponse } from '@/lib/types/api.types'
 import type { DriverList, DriverDetail, DriverWrite } from '@/lib/types/drivers.types'
 
 export const driversApi = {
-  list: (page = 1, pageSize = 20) =>
-    apiClient.get<PaginatedResponse<DriverList>>('/drivers/', { params: { page, page_size: pageSize } }),
+  list: (page = 1, pageSize = 20, search?: string) =>
+    apiClient.get<PaginatedResponse<DriverList>>('/drivers/', { params: { page, page_size: pageSize, ...(search ? { search } : {}) } }),
 
   get: (id: number) =>
     apiClient.get<DriverDetail>(`/drivers/${id}/`),

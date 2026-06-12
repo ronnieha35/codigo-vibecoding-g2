@@ -3,8 +3,8 @@ import type { PaginatedResponse } from '@/lib/types/api.types'
 import type { SupplierList, SupplierDetail, SupplierWrite } from '@/lib/types/suppliers.types'
 
 export const suppliersApi = {
-  list: (page = 1, pageSize = 20) =>
-    apiClient.get<PaginatedResponse<SupplierList>>('/suppliers/', { params: { page, page_size: pageSize } }),
+  list: (page = 1, pageSize = 20, search?: string) =>
+    apiClient.get<PaginatedResponse<SupplierList>>('/suppliers/', { params: { page, page_size: pageSize, ...(search ? { search } : {}) } }),
 
   get: (id: number) =>
     apiClient.get<SupplierDetail>(`/suppliers/${id}/`),

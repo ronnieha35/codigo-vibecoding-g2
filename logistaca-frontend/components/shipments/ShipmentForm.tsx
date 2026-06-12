@@ -4,11 +4,12 @@ import { useEffect } from 'react'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 import { Plus, Trash2 } from 'lucide-react'
 import { useCustomerList } from '@/lib/hooks/useCustomers'
 import { useWarehouseList } from '@/lib/hooks/useWarehouses'
@@ -68,6 +69,15 @@ interface Props {
   serverError?: string | null
 }
 
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-sm font-semibold text-foreground">{children}</p>
+      <Separator />
+    </div>
+  )
+}
+
 export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubmit, isPending, serverError }: Props) {
   const isEdit = !!defaultValues
   const { register, handleSubmit, control, reset, formState: { errors } } = useForm<ShipmentFormValues>({
@@ -118,13 +128,15 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
     }
   }, [open, defaultValues, reset])
 
-  const optionalSelect = (value: number | null | undefined, onChange: (v: number | null) => void, placeholder: string, options: { id: number; label: string }[]) => {
+  const optionalSelect = (
+    value: number | null | undefined,
+    onChange: (v: number | null) => void,
+    placeholder: string,
+    options: { id: number; label: string }[]
+  ) => {
     const selectedLabel = value ? (options.find((o) => o.id === value)?.label ?? placeholder) : placeholder
     return (
-      <Select
-        value={value ? String(value) : 'none'}
-        onValueChange={(v) => onChange(v === 'none' ? null : Number(v))}
-      >
+      <Select value={value ? String(value) : 'none'} onValueChange={(v) => onChange(v === 'none' ? null : Number(v))}>
         <SelectTrigger>
           <SelectValue>{selectedLabel}</SelectValue>
         </SelectTrigger>
@@ -137,123 +149,138 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{isEdit ? 'Editar Envío' : 'Nuevo Envío'}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 pt-2">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="!w-[680px] !max-w-[680px] overflow-y-auto">
+        <SheetHeader className="px-6 pt-6 mb-2">
+          <SheetTitle>{isEdit ? 'Editar Envío' : 'Nuevo Envío'}</SheetTitle>
+        </SheetHeader>
 
-          {/* Customer + Warehouse */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label>Cliente</Label>
-              <Controller control={control} name="customer_id" render={({ field }) => (
-                <Select value={field.value ? String(field.value) : ''} onValueChange={(v) => field.onChange(Number(v))}>
-                  <SelectTrigger>
-                    <SelectValue>{field.value ? (customers.find((c) => c.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>{customers.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}</SelectContent>
-                </Select>
-              )} />
-              {errors.customer_id && <p className="text-sm text-destructive">{errors.customer_id.message}</p>}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label>Bodega origen</Label>
-              <Controller control={control} name="origin_warehouse_id" render={({ field }) => (
-                <Select value={field.value ? String(field.value) : ''} onValueChange={(v) => field.onChange(Number(v))}>
-                  <SelectTrigger>
-                    <SelectValue>{field.value ? (warehouses.find((w) => w.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>{warehouses.map((w) => <SelectItem key={w.id} value={String(w.id)}>{w.name} — {w.city}</SelectItem>)}</SelectContent>
-                </Select>
-              )} />
-              {errors.origin_warehouse_id && <p className="text-sm text-destructive">{errors.origin_warehouse_id.message}</p>}
-            </div>
-          </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 px-6 pb-8">
 
-          {/* Optional FKs */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label>Conductor <span className="text-zinc-400">(opc.)</span></Label>
-              <Controller control={control} name="driver_id" render={({ field }) =>
-                optionalSelect(field.value, field.onChange, 'Sin conductor', drivers.map((d) => ({ id: d.id, label: d.license_number })))
-              } />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label>Vehículo <span className="text-zinc-400">(opc.)</span></Label>
-              <Controller control={control} name="transport_id" render={({ field }) =>
-                optionalSelect(field.value, field.onChange, 'Sin vehículo', transports.map((t) => ({ id: t.id, label: `${t.name} — ${t.license_plate}` })))
-              } />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label>Ruta <span className="text-zinc-400">(opc.)</span></Label>
-              <Controller control={control} name="route_id" render={({ field }) =>
-                optionalSelect(field.value, field.onChange, 'Sin ruta', routes.map((r) => ({ id: r.id, label: r.name })))
-              } />
+          {/* Sección: Partes */}
+          <div className="flex flex-col gap-4">
+            <SectionTitle>Partes del envío</SectionTitle>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label>Cliente</Label>
+                <Controller control={control} name="customer_id" render={({ field }) => (
+                  <Select value={field.value ? String(field.value) : ''} onValueChange={(v) => field.onChange(Number(v))}>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? (customers.find((c) => c.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>{customers.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                )} />
+                {errors.customer_id && <p className="text-sm text-destructive">{errors.customer_id.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>Bodega origen</Label>
+                <Controller control={control} name="origin_warehouse_id" render={({ field }) => (
+                  <Select value={field.value ? String(field.value) : ''} onValueChange={(v) => field.onChange(Number(v))}>
+                    <SelectTrigger>
+                      <SelectValue>{field.value ? (warehouses.find((w) => w.id === field.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>{warehouses.map((w) => <SelectItem key={w.id} value={String(w.id)}>{w.name} — {w.city}</SelectItem>)}</SelectContent>
+                  </Select>
+                )} />
+                {errors.origin_warehouse_id && <p className="text-sm text-destructive">{errors.origin_warehouse_id.message}</p>}
+              </div>
             </div>
           </div>
 
-          {/* Destination */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="destination_address">Dirección destino</Label>
-            <Input id="destination_address" {...register('destination_address')} />
-            {errors.destination_address && <p className="text-sm text-destructive">{errors.destination_address.message}</p>}
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="destination_city">Ciudad destino</Label>
-              <Input id="destination_city" {...register('destination_city')} />
-              {errors.destination_city && <p className="text-sm text-destructive">{errors.destination_city.message}</p>}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="destination_country">País destino</Label>
-              <Input id="destination_country" {...register('destination_country')} />
-              {errors.destination_country && <p className="text-sm text-destructive">{errors.destination_country.message}</p>}
-            </div>
-          </div>
-
-          {/* Status + Date + Costs */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label>Estado</Label>
-              <Controller control={control} name="status" render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue>{STATUS_OPTIONS.find((s) => s.value === field.value)?.label ?? field.value}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
-                </Select>
-              )} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="scheduled_date">Fecha programada</Label>
-              <Input id="scheduled_date" type="date" {...register('scheduled_date')} />
-              {errors.scheduled_date && <p className="text-sm text-destructive">{errors.scheduled_date.message}</p>}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="shipping_cost">Costo envío</Label>
-              <Input id="shipping_cost" type="number" step="0.01" {...register('shipping_cost', { valueAsNumber: true })} />
-              {errors.shipping_cost && <p className="text-sm text-destructive">{errors.shipping_cost.message}</p>}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="total_weight_kg">Peso total (kg)</Label>
-              <Input id="total_weight_kg" type="number" step="0.01" {...register('total_weight_kg', { valueAsNumber: true })} />
-              {errors.total_weight_kg && <p className="text-sm text-destructive">{errors.total_weight_kg.message}</p>}
+          {/* Sección: Asignación operativa */}
+          <div className="flex flex-col gap-4">
+            <SectionTitle>Asignación operativa</SectionTitle>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label>Conductor <span className="text-muted-foreground text-xs">(opc.)</span></Label>
+                <Controller control={control} name="driver_id" render={({ field }) =>
+                  optionalSelect(field.value, field.onChange, 'Sin conductor',
+                    drivers.map((d) => ({ id: d.id, label: `${d.first_name} ${d.last_name}` })))
+                } />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>Vehículo <span className="text-muted-foreground text-xs">(opc.)</span></Label>
+                <Controller control={control} name="transport_id" render={({ field }) =>
+                  optionalSelect(field.value, field.onChange, 'Sin vehículo',
+                    transports.map((t) => ({ id: t.id, label: `${t.name} — ${t.license_plate}` })))
+                } />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>Ruta <span className="text-muted-foreground text-xs">(opc.)</span></Label>
+                <Controller control={control} name="route_id" render={({ field }) =>
+                  optionalSelect(field.value, field.onChange, 'Sin ruta',
+                    routes.map((r) => ({ id: r.id, label: r.name })))
+                } />
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="notes">Notas <span className="text-zinc-400">(opc.)</span></Label>
-            <Input id="notes" {...register('notes')} />
+          {/* Sección: Destino */}
+          <div className="flex flex-col gap-4">
+            <SectionTitle>Destino</SectionTitle>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="destination_address">Dirección</Label>
+              <Input id="destination_address" placeholder="Calle, número, colonia..." {...register('destination_address')} />
+              {errors.destination_address && <p className="text-sm text-destructive">{errors.destination_address.message}</p>}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="destination_city">Ciudad</Label>
+                <Input id="destination_city" placeholder="Ej. Guatemala" {...register('destination_city')} />
+                {errors.destination_city && <p className="text-sm text-destructive">{errors.destination_city.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="destination_country">País</Label>
+                <Input id="destination_country" placeholder="Ej. Guatemala" {...register('destination_country')} />
+                {errors.destination_country && <p className="text-sm text-destructive">{errors.destination_country.message}</p>}
+              </div>
+            </div>
           </div>
 
-          {/* Items */}
-          <div className="flex flex-col gap-2">
+          {/* Sección: Logística */}
+          <div className="flex flex-col gap-4">
+            <SectionTitle>Logística</SectionTitle>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label>Estado</Label>
+                <Controller control={control} name="status" render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue>{STATUS_OPTIONS.find((s) => s.value === field.value)?.label ?? field.value}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>{STATUS_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                )} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="scheduled_date">Fecha programada</Label>
+                <Input id="scheduled_date" type="date" {...register('scheduled_date')} />
+                {errors.scheduled_date && <p className="text-sm text-destructive">{errors.scheduled_date.message}</p>}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="shipping_cost">Costo de envío</Label>
+                <Input id="shipping_cost" type="number" step="0.01" placeholder="0.00" {...register('shipping_cost', { valueAsNumber: true })} />
+                {errors.shipping_cost && <p className="text-sm text-destructive">{errors.shipping_cost.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="total_weight_kg">Peso total (kg)</Label>
+                <Input id="total_weight_kg" type="number" step="0.01" placeholder="0.00" {...register('total_weight_kg', { valueAsNumber: true })} />
+                {errors.total_weight_kg && <p className="text-sm text-destructive">{errors.total_weight_kg.message}</p>}
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="notes">Notas <span className="text-muted-foreground text-xs">(opc.)</span></Label>
+              <Input id="notes" placeholder="Instrucciones especiales..." {...register('notes')} />
+            </div>
+          </div>
+
+          {/* Sección: Items */}
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <Label>Items</Label>
+              <SectionTitle>Items del envío</SectionTitle>
               <Button type="button" variant="outline" size="sm" onClick={() => append({ product_id: 0, quantity: 1, unit_price: 0 })}>
                 <Plus className="w-4 h-4 mr-1" /> Agregar item
               </Button>
@@ -262,39 +289,41 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
               <p className="text-sm text-destructive">{errors.items.message}</p>
             )}
             {fields.length === 0 && (
-              <p className="text-sm text-zinc-400 text-center py-2">Sin items. Agrega al menos uno.</p>
+              <p className="text-sm text-muted-foreground text-center py-4 border rounded-md">Sin items. Agrega al menos uno.</p>
             )}
-            {fields.map((field, index) => (
-              <div key={field.id} className="flex items-start gap-2 p-3 border rounded-md">
-                <div className="flex-1 grid grid-cols-3 gap-2">
-                  <div className="flex flex-col gap-1">
-                    <Label className="text-xs">Producto</Label>
-                    <Controller control={control} name={`items.${index}.product_id`} render={({ field: f }) => (
-                      <Select value={f.value ? String(f.value) : ''} onValueChange={(v) => f.onChange(Number(v))}>
-                        <SelectTrigger>
-                          <SelectValue>{f.value ? (products.find((p) => p.id === f.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>{products.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}</SelectContent>
-                      </Select>
-                    )} />
-                    {errors.items?.[index]?.product_id && <p className="text-xs text-destructive">{errors.items[index]?.product_id?.message}</p>}
+            <div className="flex flex-col gap-3">
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex items-start gap-3 p-4 border rounded-md bg-muted/30">
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="flex flex-col gap-1">
+                      <Label className="text-xs">Producto</Label>
+                      <Controller control={control} name={`items.${index}.product_id`} render={({ field: f }) => (
+                        <Select value={f.value ? String(f.value) : ''} onValueChange={(v) => f.onChange(Number(v))}>
+                          <SelectTrigger>
+                            <SelectValue>{f.value ? (products.find((p) => p.id === f.value)?.name ?? 'Seleccionar...') : 'Seleccionar...'}</SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>{products.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}</SelectContent>
+                        </Select>
+                      )} />
+                      {errors.items?.[index]?.product_id && <p className="text-xs text-destructive">{errors.items[index]?.product_id?.message}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <Label className="text-xs">Cantidad</Label>
+                      <Input type="number" min={1} {...register(`items.${index}.quantity`, { valueAsNumber: true })} />
+                      {errors.items?.[index]?.quantity && <p className="text-xs text-destructive">{errors.items[index]?.quantity?.message}</p>}
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <Label className="text-xs">Precio unitario</Label>
+                      <Input type="number" step="0.01" placeholder="0.00" {...register(`items.${index}.unit_price`, { valueAsNumber: true })} />
+                      {errors.items?.[index]?.unit_price && <p className="text-xs text-destructive">{errors.items[index]?.unit_price?.message}</p>}
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <Label className="text-xs">Cantidad</Label>
-                    <Input type="number" {...register(`items.${index}.quantity`, { valueAsNumber: true })} />
-                    {errors.items?.[index]?.quantity && <p className="text-xs text-destructive">{errors.items[index]?.quantity?.message}</p>}
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Label className="text-xs">Precio unit.</Label>
-                    <Input type="number" step="0.01" {...register(`items.${index}.unit_price`, { valueAsNumber: true })} />
-                    {errors.items?.[index]?.unit_price && <p className="text-xs text-destructive">{errors.items[index]?.unit_price?.message}</p>}
-                  </div>
+                  <Button type="button" variant="ghost" size="icon" className="text-destructive hover:text-destructive mt-5" onClick={() => remove(index)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button type="button" variant="ghost" size="icon" className="text-destructive hover:text-destructive mt-1" onClick={() => remove(index)}>
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           {serverError && <p className="text-sm text-destructive text-center">{serverError}</p>}
@@ -306,7 +335,7 @@ export default function ShipmentForm({ open, onOpenChange, defaultValues, onSubm
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 }

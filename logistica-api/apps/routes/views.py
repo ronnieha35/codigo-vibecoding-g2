@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
@@ -13,13 +14,14 @@ from .serializers import (
 
 @viewset_tag('routes')
 class RouteViewSet(ModelViewSet):
-    queryset = (
-        Route.objects
-        .select_related('origin_warehouse')
-        .prefetch_related('stops__warehouse')
-        .filter(is_active=True)
-    )
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = Route.objects.filter(is_active=True)
+        search = self.request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
+        return qs
 
     def get_serializer_class(self):
         if self.action == 'list':

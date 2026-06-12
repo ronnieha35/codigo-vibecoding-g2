@@ -6,10 +6,10 @@ import type { WarehouseWrite } from '@/lib/types/warehouses.types'
 
 const QUERY_KEY = 'warehouses'
 
-export function useWarehouseList(page: number) {
+export function useWarehouseList(page: number, search?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => warehousesApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, search],
+    queryFn: () => warehousesApi.list(page, 20, search).then((r) => r.data),
   })
 }
 

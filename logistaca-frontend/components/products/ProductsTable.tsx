@@ -27,6 +27,8 @@ interface Props {
   onPageChange: (page: number) => void
   onEdit: (id: number) => void
   onDelete: (product: ProductList) => void
+  canEdit?: boolean
+  canDelete?: boolean
 }
 
 const columnHelper = createColumnHelper<ProductList>()
@@ -39,6 +41,8 @@ export default function ProductsTable({
   onPageChange,
   onEdit,
   onDelete,
+  canEdit = true,
+  canDelete = true,
 }: Props) {
   const columns = [
     columnHelper.accessor('name', { header: 'Nombre' }),
@@ -58,35 +62,39 @@ export default function ProductsTable({
           <Badge variant="secondary">Inactivo</Badge>
         ),
     }),
-    columnHelper.display({
+    ...(canEdit || canDelete ? [columnHelper.display({
       id: 'actions',
       header: 'Acciones',
       cell: (info) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={() => onEdit(info.row.original.id)}>
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-destructive hover:text-destructive"
-            onClick={() => onDelete(info.row.original)}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          {canEdit && (
+            <Button variant="ghost" size="icon" onClick={() => onEdit(info.row.original.id)}>
+              <Pencil className="w-4 h-4" />
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-destructive hover:text-destructive"
+              onClick={() => onDelete(info.row.original)}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       ),
-    }),
+    })] : []),
   ]
 
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() })
 
-  if (isLoading) return <div className="py-12 text-center text-zinc-400">Cargando...</div>
-  if (!data.length) return <div className="py-12 text-center text-zinc-400">No hay productos registrados.</div>
+  if (isLoading) return <div className="py-12 text-center text-muted-foreground">Cargando...</div>
+  if (!data.length) return <div className="py-12 text-center text-muted-foreground">No hay productos registrados.</div>
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -110,7 +118,7 @@ export default function ProductsTable({
       </div>
       <div className="flex items-center justify-end gap-2">
         <Button variant="outline" size="sm" disabled={page === 1} onClick={() => onPageChange(page - 1)}>Anterior</Button>
-        <span className="text-sm text-zinc-500">Página {page}</span>
+        <span className="text-sm text-muted-foreground">Página {page}</span>
         <Button variant="outline" size="sm" disabled={!hasNextPage} onClick={() => onPageChange(page + 1)}>Siguiente</Button>
       </div>
     </div>

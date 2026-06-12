@@ -20,16 +20,18 @@ interface LoginError {
 export function useLogin() {
   const router = useRouter()
   const setTokens = useAuthStore((s) => s.setTokens)
+  const setUser = useAuthStore((s) => s.setUser)
 
   return useMutation<void, LoginError, LoginCredentials>({
     mutationFn: async ({ username, password }) => {
       const res = await authApi.login(username, password)
-      const { access, refresh } = res.data
+      const { access, refresh, id, username: uname, email, first_name, last_name, is_superuser } = res.data
       setTokens(access, refresh)
+      setUser({ id, username: uname, email, first_name, last_name, is_superuser, permissions: [] })
       setAuthCookie(access)
     },
     onSuccess: () => {
-      router.push('/')
+      router.push('/dashboard')
       router.refresh()
     },
     onError: (_err, _vars, _ctx) => {},

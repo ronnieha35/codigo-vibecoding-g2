@@ -3,8 +3,8 @@ import type { PaginatedResponse } from '@/lib/types/api.types'
 import type { TransportList, TransportDetail, TransportWrite } from '@/lib/types/transport.types'
 
 export const transportApi = {
-  list: (page = 1, pageSize = 20) =>
-    apiClient.get<PaginatedResponse<TransportList>>('/transport/', { params: { page, page_size: pageSize } }),
+  list: (page = 1, pageSize = 20, search?: string, vehicleType?: string) =>
+    apiClient.get<PaginatedResponse<TransportList>>('/transport/', { params: { page, page_size: pageSize, ...(search ? { search } : {}), ...(vehicleType ? { vehicle_type: vehicleType } : {}) } }),
 
   get: (id: number) =>
     apiClient.get<TransportDetail>(`/transport/${id}/`),

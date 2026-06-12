@@ -1,15 +1,11 @@
-from django.conf import settings
 from django.db import models
 
 from apps.core.models import BaseModel
 
 
 class Driver(BaseModel):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='driver',
-    )
+    first_name = models.CharField(max_length=150, default='')
+    last_name = models.CharField(max_length=150, default='')
     transport = models.ForeignKey(
         'transport.Transport',
         on_delete=models.SET_NULL,
@@ -26,4 +22,4 @@ class Driver(BaseModel):
         db_table = 'drivers_driver'
 
     def __str__(self):
-        return f'{self.user.get_full_name()} ({self.license_number})'
+        return f'{self.first_name} {self.last_name} ({self.license_number})'

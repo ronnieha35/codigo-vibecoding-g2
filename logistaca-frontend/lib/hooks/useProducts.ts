@@ -6,10 +6,10 @@ import type { ProductWrite } from '@/lib/types/products.types'
 
 const QUERY_KEY = 'products'
 
-export function useProductList(page: number) {
+export function useProductList(page: number, search?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => productsApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, search],
+    queryFn: () => productsApi.list(page, 20, search).then((r) => r.data),
   })
 }
 

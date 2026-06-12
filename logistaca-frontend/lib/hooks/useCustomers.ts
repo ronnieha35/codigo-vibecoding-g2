@@ -6,10 +6,10 @@ import type { CustomerWrite } from '@/lib/types/customers.types'
 
 const QUERY_KEY = 'customers'
 
-export function useCustomerList(page: number) {
+export function useCustomerList(page: number, search?: string, customerType?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => customersApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, search, customerType],
+    queryFn: () => customersApi.list(page, 20, search, customerType).then((r) => r.data),
   })
 }
 

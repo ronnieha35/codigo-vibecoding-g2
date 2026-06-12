@@ -6,10 +6,10 @@ import type { RouteWrite } from '@/lib/types/routes.types'
 
 const QUERY_KEY = 'routes'
 
-export function useRouteList(page: number) {
+export function useRouteList(page: number, search?: string) {
   return useQuery({
-    queryKey: [QUERY_KEY, page],
-    queryFn: () => routesApi.list(page).then((r) => r.data),
+    queryKey: [QUERY_KEY, page, search],
+    queryFn: () => routesApi.list(page, 20, search).then((r) => r.data),
   })
 }
 

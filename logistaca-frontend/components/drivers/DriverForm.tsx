@@ -13,7 +13,8 @@ import { useTransportList } from '@/lib/hooks/useTransport'
 import type { DriverDetail } from '@/lib/types/drivers.types'
 
 const schema = z.object({
-  user_id: z.number().positive('User ID requerido'),
+  first_name: z.string().min(1, 'Nombre requerido'),
+  last_name: z.string().min(1, 'Apellido requerido'),
   transport_id: z.number().nullable().optional(),
   license_number: z.string().min(1, 'Número de licencia requerido'),
   phone: z.string().min(1, 'Teléfono requerido'),
@@ -24,7 +25,8 @@ const schema = z.object({
 export type DriverFormValues = z.infer<typeof schema>
 
 const EMPTY: DriverFormValues = {
-  user_id: undefined as unknown as number,
+  first_name: '',
+  last_name: '',
   transport_id: null,
   license_number: '',
   phone: '',
@@ -55,7 +57,8 @@ export default function DriverForm({ open, onOpenChange, defaultValues, onSubmit
     if (open) {
       reset(defaultValues
         ? {
-            user_id: defaultValues.user_id,
+            first_name: defaultValues.first_name,
+            last_name: defaultValues.last_name,
             transport_id: defaultValues.transport_id,
             license_number: defaultValues.license_number,
             phone: defaultValues.phone,
@@ -82,26 +85,28 @@ export default function DriverForm({ open, onOpenChange, defaultValues, onSubmit
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="user_id">User ID</Label>
-              <Input
-                id="user_id"
-                type="number"
-                placeholder="ID del usuario"
-                {...register('user_id', { valueAsNumber: true })}
-              />
-              {errors.user_id && <p className="text-sm text-destructive">{errors.user_id.message}</p>}
+              <Label htmlFor="first_name">Nombre</Label>
+              <Input id="first_name" placeholder="Ej. Juan" {...register('first_name')} />
+              {errors.first_name && <p className="text-sm text-destructive">{errors.first_name.message}</p>}
             </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="last_name">Apellido</Label>
+              <Input id="last_name" placeholder="Ej. Pérez" {...register('last_name')} />
+              {errors.last_name && <p className="text-sm text-destructive">{errors.last_name.message}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="license_number">Número de licencia</Label>
               <Input id="license_number" placeholder="Ej. B-1234" {...register('license_number')} />
               {errors.license_number && <p className="text-sm text-destructive">{errors.license_number.message}</p>}
             </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="phone">Teléfono</Label>
-            <Input id="phone" placeholder="+502 0000-0000" {...register('phone')} />
-            {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input id="phone" placeholder="+502 0000-0000" {...register('phone')} />
+              {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
+            </div>
           </div>
 
           <div className="flex flex-col gap-1.5">

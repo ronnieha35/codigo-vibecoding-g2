@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'apps.drivers',
     'apps.routes',
     'apps.shipments',
+    'apps.analytics',
 ]
 
 MIDDLEWARE = [

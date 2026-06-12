@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ThemeProvider } from 'next-themes'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { useState } from 'react'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -21,8 +22,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
-        {children}
-        <ReactQueryDevtools initialIsOpen={false} />
+        <TooltipProvider>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )
