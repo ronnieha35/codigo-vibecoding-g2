@@ -1,7 +1,10 @@
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -71,6 +74,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
